@@ -25,14 +25,15 @@ START_TXT = """
 Hi {}
 I am OCR Bot.
 
-> `I can extract any text from images using OCR technology. All languages supported.`
+I can extract text from images using OCR technology
+All languages supported
 
 Send an image to get started.
 """
 
 START_BTN = InlineKeyboardMarkup(
         [[
-        InlineKeyboardButton('Source Code', url='https://github.com/samadii/OCR-Bot'),
+        InlineKeyboardButton('Bot Channel', url='https://t.me/botsnano'),
         ]]
     )
 
@@ -50,7 +51,7 @@ async def start(bot, update):
 
 @Bot.on_message(filters.private & filters.photo)
 async def ocr(bot, msg):
-    lang_code = await bot.ask(msg.chat.id,'`Now send the ISO language code.`\n\n[List of ISO 639-2 language codes](https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes)', filters=filters.text, disable_web_page_preview=True)
+    lang_code = await bot.ask(msg.chat.id,'Now send the ISO language code.\n[English: eng]\n\n[List of ISO 639-2 language codes](https://en.m.wikipedia.org/wiki/List_of_ISO_639-2_codes)', filters=filters.text, disable_web_page_preview=True)
     data_url = f"https://github.com/tesseract-ocr/tessdata/raw/main/{lang_code.text}.traineddata"
     dirs = r"/app/vendor/tessdata"
     path = os.path.join(dirs, f"{lang_code.text}.traineddata")
@@ -60,7 +61,7 @@ async def ocr(bot, msg):
             open(path, 'wb').write(data.content)
         else:
             return await msg.reply("`Either the lang code is wrong or the lang is not supported.`")
-    message = await msg.reply("`Downloading and Extracting...`")
+    message = await msg.reply("Processing,Please wait...")
     image = await msg.download(file_name=f"text_{msg.from_user.id}.jpg")
     img = Image.open(image)
     text = pytesseract.image_to_string(img, lang=f"{lang_code.text}")
